@@ -155,12 +155,21 @@ def assignment_cost(weights: Weights, res: Optional[dict], order: Order) -> floa
 
 
 def generate_orders(duration_s: float, lambda_per_hour: float, dark_stores: list[str],
-                     delivery_nodes: list[str], seed: int = 42) -> list[Order]:
+                     delivery_nodes: list[str], seed: int = 42,
+                     graph: CityGraph = None) -> list[Order]:
     """
     Poisson arrival process: inter-arrival times ~ Exponential(lambda).
     This is the standard model for independent random order arrivals in
     queueing theory and is what real quick-commerce demand forecasting
     models assume at the base layer.
+
+    When `graph` is supplied, each order is fulfilled from the dark store
+    NEAREST its destination, which is the whole point of a dark-store network:
+    stores are sited to serve a local catchment. Without it the origin is a
+    uniform random store, which on a real city map means most orders become
+    cross-town trips no operator would ever dispatch that way - it inflates
+    both distance and battery failures for a reason that is an artefact of
+    order generation, not of drone capability.
     """
     rng = random.Random(seed)
     orders = []
@@ -172,10 +181,16 @@ def generate_orders(duration_s: float, lambda_per_hour: float, dark_stores: list
         t += inter_arrival
         if t >= duration_s:
             break
+        destination = rng.choice(delivery_nodes)
+        if graph is not None:
+            origin = min(dark_stores,
+                         key=lambda s: graph.straight_line_distance_m(s, destination))
+        else:
+            origin = rng.choice(dark_stores)
         orders.append(Order(
             id=oid,
-            origin=rng.choice(dark_stores),
-            destination=rng.choice(delivery_nodes),
+            origin=origin,
+            destination=destination,
             created_at_s=t,
             payload_kg=round(rng.uniform(0.5, 3.5), 2),
         ))
@@ -265,6 +280,10 @@ def evaluate_drone_assignment(order: Order, vehicle: Vehicle, graph: CityGraph,
         "delivery_time_s": delivery_time_s,
         "cycle_time_s": cycle_time_s,
         "energy_wh": sortie_energy_wh,
+        # Customer-facing distance (reposition + laden legs), matching what
+        # delivery_time_s covers. The return leg is in the energy figure but
+        # not here, for the same reason it isn't in delivery_time_s.
+        "distance_m": repo["total_distance_m"] + out["total_distance_m"],
         "cost_inr": sortie_energy_wh * INR_PER_KWH / 1000.0,
         "path": _join(repo["path"], out["path"]),
         "reposition_legs": max(0, len(repo["path"]) - 1),
@@ -293,6 +312,7 @@ def evaluate_rider_assignment(order: Order, vehicle: Vehicle, graph: CityGraph
         "delivery_time_s": delivery_time_s,
         "cycle_time_s": cycle_time_s,
         "energy_wh": None,
+        "distance_m": repo_m + out_m,
         "cost_inr": cost_inr,
         "path": [vehicle.station, order.origin, order.destination],
         "reposition_legs": 0 if vehicle.station == order.origin else 1,
@@ -377,6 +397,8 @@ def greedy_assign(orders: list[Order], vehicles: list[Vehicle], graph: CityGraph
             "vehicle_kind": vehicle.kind,
             "delivery_time_s": best["delivery_time_s"],
             "cycle_time_s": best["cycle_time_s"],
+            "energy_wh": best["energy_wh"],
+            "distance_m": best["distance_m"],
             "cost_inr": best["cost_inr"],
             "path": best["path"],
             "repositioned": best["reposition_legs"] > 0,

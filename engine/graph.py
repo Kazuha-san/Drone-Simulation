@@ -44,8 +44,11 @@ class NoFlyZone:
 
 
 class CityGraph:
-    # 1 canvas unit = this many meters. Canvas is 2000x2000 units representing
-    # roughly a 12km x 12km span of central Bhopal.
+    # 1 canvas unit = this many meters. Default kept for any caller that builds
+    # a graph by hand; from_json() overrides it per-instance from the map's
+    # meta.metres_per_unit, so the scale always matches the map actually
+    # loaded rather than a constant that silently goes stale when the map is
+    # regenerated in a different projection.
     SCALE_M_PER_UNIT = 6.0
 
     def __init__(self):
@@ -59,6 +62,10 @@ class CityGraph:
         with open(path) as f:
             raw = json.load(f)
         g = cls()
+        # Must be set before add_edge(), which converts units to metres.
+        meta = raw.get("meta", {})
+        if "metres_per_unit" in meta:
+            g.SCALE_M_PER_UNIT = float(meta["metres_per_unit"])
         for n in raw["nodes"]:
             g.add_node(Node(id=n["id"], x=n["x"], y=n["y"], kind=n.get("kind", "waypoint")))
         for e in raw["edges"]:
