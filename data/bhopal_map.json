@@ -1,0 +1,70 @@
+{
+  "_comment": "Stylized 2D canvas representation of central Bhopal. Coordinates are in a 2000x2000 unit canvas, NOT real lat/long. 1 unit = 6 meters (see engine/graph.py CityGraph.SCALE_M_PER_UNIT). Zones are hand-placed to reflect real Bhopal geography approximately: Upper/Lower Lake, Old City, MP Nagar, Arera Colony, Kolar Road, VVIP zone, airport approach. See docs/MAP.md.",
+
+  "nodes": [
+    { "id": "DS_MPNAGAR",   "x": 1100, "y": 900,  "kind": "dark_store" },
+    { "id": "DS_ARERA",     "x": 1500, "y": 600,  "kind": "dark_store" },
+    { "id": "DS_KOLAR",     "x": 900,  "y": 1500, "kind": "dark_store" },
+
+    { "id": "WP_NEWMARKET", "x": 1000, "y": 800,  "kind": "waypoint" },
+    { "id": "WP_TT_NAGAR",  "x": 950,  "y": 700,  "kind": "waypoint" },
+    { "id": "WP_HABIBGANJ", "x": 1300, "y": 1000, "kind": "waypoint" },
+    { "id": "WP_BAIRAGARH", "x": 600,  "y": 500,  "kind": "waypoint" },
+    { "id": "WP_KATARA",    "x": 1250, "y": 1300, "kind": "waypoint" },
+    { "id": "WP_BAWADIA",   "x": 1450, "y": 850,  "kind": "waypoint" },
+    { "id": "WP_OLDCITY",   "x": 800,  "y": 950,  "kind": "waypoint" },
+
+    { "id": "DEL_ARERA1",   "x": 1600, "y": 500,  "kind": "delivery_zone" },
+    { "id": "DEL_ARERA2",   "x": 1550, "y": 700,  "kind": "delivery_zone" },
+    { "id": "DEL_KOLAR1",   "x": 850,  "y": 1650, "kind": "delivery_zone" },
+    { "id": "DEL_KOLAR2",   "x": 1000, "y": 1550, "kind": "delivery_zone" },
+    { "id": "DEL_MPNAGAR1", "x": 1150, "y": 950,  "kind": "delivery_zone" },
+    { "id": "DEL_HABIBGANJ","x": 1350, "y": 1050, "kind": "delivery_zone" },
+    { "id": "DEL_OLDCITY1", "x": 750,  "y": 900,  "kind": "delivery_zone" },
+    { "id": "DEL_BAWADIA",  "x": 1500, "y": 900,  "kind": "delivery_zone" }
+  ],
+
+  "edges": [
+    { "a": "DS_MPNAGAR", "b": "WP_NEWMARKET" },
+    { "a": "WP_NEWMARKET", "b": "WP_TT_NAGAR" },
+    { "a": "WP_TT_NAGAR", "b": "WP_BAIRAGARH" },
+    { "a": "WP_NEWMARKET", "b": "WP_OLDCITY" },
+    { "a": "WP_OLDCITY", "b": "DEL_OLDCITY1" },
+    { "a": "DS_MPNAGAR", "b": "DEL_MPNAGAR1" },
+    { "a": "DS_MPNAGAR", "b": "WP_HABIBGANJ" },
+    { "a": "WP_HABIBGANJ", "b": "DEL_HABIBGANJ" },
+    { "a": "WP_HABIBGANJ", "b": "WP_KATARA" },
+    { "a": "WP_KATARA", "b": "DS_KOLAR" },
+    { "a": "DS_KOLAR", "b": "DEL_KOLAR1" },
+    { "a": "DS_KOLAR", "b": "DEL_KOLAR2" },
+    { "a": "DS_MPNAGAR", "b": "WP_BAWADIA" },
+    { "a": "WP_BAWADIA", "b": "DEL_BAWADIA" },
+    { "a": "WP_BAWADIA", "b": "DS_ARERA" },
+    { "a": "DS_ARERA", "b": "DEL_ARERA1" },
+    { "a": "DS_ARERA", "b": "DEL_ARERA2" },
+    { "a": "DEL_ARERA2", "b": "WP_BAWADIA" }
+  ],
+
+  "no_fly_zones": [
+    {
+      "name": "Upper Lake",
+      "reason": "large water body, no designated drone corridor",
+      "polygon": [[750, 400], [1050, 380], [1100, 650], [900, 750], [700, 650]]
+    },
+    {
+      "name": "Lower Lake",
+      "reason": "water body adjacent to Old City, restricted",
+      "polygon": [[650, 850], [780, 830], [800, 950], [700, 980]]
+    },
+    {
+      "name": "VVIP Zone (Raj Bhavan / Vidhan Sabha)",
+      "reason": "permanently restricted government airspace",
+      "polygon": [[1000, 550], [1150, 540], [1170, 650], [1020, 660]]
+    },
+    {
+      "name": "Airport Approach (Raja Bhoj)",
+      "reason": "5km red-zone radius per DGCA airport buffer rules",
+      "polygon": [[300, 200], [600, 180], [650, 400], [350, 420]]
+    }
+  ]
+}

@@ -1,0 +1,2319 @@
+{
+  "map": {
+    "nodes": [
+      {
+        "id": "DS_MPNAGAR",
+        "x": 1100,
+        "y": 900,
+        "kind": "dark_store"
+      },
+      {
+        "id": "DS_ARERA",
+        "x": 1500,
+        "y": 600,
+        "kind": "dark_store"
+      },
+      {
+        "id": "DS_KOLAR",
+        "x": 900,
+        "y": 1500,
+        "kind": "dark_store"
+      },
+      {
+        "id": "WP_NEWMARKET",
+        "x": 1000,
+        "y": 800,
+        "kind": "waypoint"
+      },
+      {
+        "id": "WP_TT_NAGAR",
+        "x": 950,
+        "y": 700,
+        "kind": "waypoint"
+      },
+      {
+        "id": "WP_HABIBGANJ",
+        "x": 1300,
+        "y": 1000,
+        "kind": "waypoint"
+      },
+      {
+        "id": "WP_BAIRAGARH",
+        "x": 600,
+        "y": 500,
+        "kind": "waypoint"
+      },
+      {
+        "id": "WP_KATARA",
+        "x": 1250,
+        "y": 1300,
+        "kind": "waypoint"
+      },
+      {
+        "id": "WP_BAWADIA",
+        "x": 1450,
+        "y": 850,
+        "kind": "waypoint"
+      },
+      {
+        "id": "WP_OLDCITY",
+        "x": 800,
+        "y": 950,
+        "kind": "waypoint"
+      },
+      {
+        "id": "DEL_ARERA1",
+        "x": 1600,
+        "y": 500,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_ARERA2",
+        "x": 1550,
+        "y": 700,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_KOLAR1",
+        "x": 850,
+        "y": 1650,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_KOLAR2",
+        "x": 1000,
+        "y": 1550,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_MPNAGAR1",
+        "x": 1150,
+        "y": 950,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_HABIBGANJ",
+        "x": 1350,
+        "y": 1050,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_OLDCITY1",
+        "x": 750,
+        "y": 900,
+        "kind": "delivery_zone"
+      },
+      {
+        "id": "DEL_BAWADIA",
+        "x": 1500,
+        "y": 900,
+        "kind": "delivery_zone"
+      }
+    ],
+    "no_fly_zones": [
+      {
+        "name": "Upper Lake",
+        "polygon": [
+          [
+            750,
+            400
+          ],
+          [
+            1050,
+            380
+          ],
+          [
+            1100,
+            650
+          ],
+          [
+            900,
+            750
+          ],
+          [
+            700,
+            650
+          ]
+        ],
+        "reason": "large water body, no designated drone corridor"
+      },
+      {
+        "name": "Lower Lake",
+        "polygon": [
+          [
+            650,
+            850
+          ],
+          [
+            780,
+            830
+          ],
+          [
+            800,
+            950
+          ],
+          [
+            700,
+            980
+          ]
+        ],
+        "reason": "water body adjacent to Old City, restricted"
+      },
+      {
+        "name": "VVIP Zone (Raj Bhavan / Vidhan Sabha)",
+        "polygon": [
+          [
+            1000,
+            550
+          ],
+          [
+            1150,
+            540
+          ],
+          [
+            1170,
+            650
+          ],
+          [
+            1020,
+            660
+          ]
+        ],
+        "reason": "permanently restricted government airspace"
+      },
+      {
+        "name": "Airport Approach (Raja Bhoj)",
+        "polygon": [
+          [
+            300,
+            200
+          ],
+          [
+            600,
+            180
+          ],
+          [
+            650,
+            400
+          ],
+          [
+            350,
+            420
+          ]
+        ],
+        "reason": "5km red-zone radius per DGCA airport buffer rules"
+      }
+    ]
+  },
+  "scenarios": {
+    "drones_only": {
+      "orders": [
+        {
+          "id": 0,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 102.0060287274801,
+          "payload_kg": 1.23,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 1,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 117.0346028886648,
+          "payload_kg": 2.27,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 2,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 120.26447411220309,
+          "payload_kg": 1.2,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 3,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 212.3995073841512,
+          "payload_kg": 2.65,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 4,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 333.23942386972834,
+          "payload_kg": 1.85,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 5,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 365.838855250103,
+          "payload_kg": 2.59,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 6,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 407.4283638999611,
+          "payload_kg": 3.37,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 7,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 448.4652568880694,
+          "payload_kg": 0.79,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 8,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 636.5206310513832,
+          "payload_kg": 2.92,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 9,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 767.35467409601,
+          "payload_kg": 3.42,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 10,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 814.9221423809084,
+          "payload_kg": 2.99,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 11,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 911.2917628935932,
+          "payload_kg": 2.61,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 12,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 915.9825169192819,
+          "payload_kg": 3.46,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 13,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 1109.3040289315388,
+          "payload_kg": 1.33,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 14,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 1210.277516484987,
+          "payload_kg": 1.61,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 15,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 1233.787368130361,
+          "payload_kg": 2.33,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 16,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1252.5576066662725,
+          "payload_kg": 0.99,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 17,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1300.2733933357074,
+          "payload_kg": 2.55,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 18,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1485.330066800458,
+          "payload_kg": 2.97,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 19,
+          "origin": "DS_ARERA",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 1648.8291291760418,
+          "payload_kg": 0.7,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 20,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 1893.1704323235401,
+          "payload_kg": 1.14,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 21,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_BAWADIA",
+          "created_at_s": 1962.3315203493776,
+          "payload_kg": 0.93,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 22,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 1977.3708324575284,
+          "payload_kg": 2.74,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 23,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 2033.3083339264426,
+          "payload_kg": 1.59,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 24,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_BAWADIA",
+          "created_at_s": 2625.7180117269427,
+          "payload_kg": 0.77,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 25,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 2630.544261487532,
+          "payload_kg": 2.38,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 26,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 2787.604144640579,
+          "payload_kg": 1.65,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 27,
+          "origin": "DS_ARERA",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 2878.210571813103,
+          "payload_kg": 3.41,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 28,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 3075.380344256225,
+          "payload_kg": 2.55,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 29,
+          "origin": "DS_ARERA",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 3152.3767588320757,
+          "payload_kg": 0.83,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 30,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA1",
+          "created_at_s": 3209.4281736905264,
+          "payload_kg": 3.36,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 31,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 3418.0570188290976,
+          "payload_kg": 2.02,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 32,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 3429.3079331048166,
+          "payload_kg": 3.03,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 33,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 3500.167092894736,
+          "payload_kg": 1.62,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 34,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_ARERA1",
+          "created_at_s": 3517.787010870204,
+          "payload_kg": 2.3,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 35,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 3584.848448646339,
+          "payload_kg": 3.14,
+          "sla_seconds": 900.0
+        }
+      ],
+      "results": [
+        {
+          "order_id": 0,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4187393852310199,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 1,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5559336602784991,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 2,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5195427995162358,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 3,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5692728670642968,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 4,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5414416736839471,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 5,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 6,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5951294769475665,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 7,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 8,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4651287117491545,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 9,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5969530223069923,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 10,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.46712037984863425,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 11,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5678586549933081,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 12,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4806340441179014,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 13,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 14,
+          "status": "delivered",
+          "vehicle_id": "drone_3",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 462.69258179595965,
+          "cost_inr": 3.015838219040191,
+          "path": [
+            "DS_MPNAGAR",
+            "WP_HABIBGANJ",
+            "WP_KATARA",
+            "DS_KOLAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 15,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.558025567574061,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 16,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 17,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 18,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 19,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4048802196436276,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 20,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 21,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 138.37020018322278,
+          "cost_inr": 1.0299492582966787,
+          "path": [
+            "DS_ARERA",
+            "WP_BAWADIA",
+            "DEL_BAWADIA"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 22,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.46003248559013277,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 23,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 24,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 25,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 26,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 27,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.47918481314858324,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 28,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 29,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 30,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 31,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 32,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 33,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 34,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 35,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        }
+      ],
+      "summary": {
+        "fleet_mode": "drones_only",
+        "total_orders": 36,
+        "delivered": 17,
+        "failed": 19,
+        "failure_rate": 0.5277777777777778,
+        "sla_violations": 0,
+        "p50_delivery_time_s": 47.504084386548186,
+        "p95_delivery_time_s": 462.69258179595965,
+        "avg_cost_inr": 0.689745014060637,
+        "orders_per_hour_actual": 17.0
+      }
+    },
+    "riders_only": {
+      "orders": [
+        {
+          "id": 0,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 102.0060287274801,
+          "payload_kg": 1.23,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 1,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 117.0346028886648,
+          "payload_kg": 2.27,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 2,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 120.26447411220309,
+          "payload_kg": 1.2,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 3,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 212.3995073841512,
+          "payload_kg": 2.65,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 4,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 333.23942386972834,
+          "payload_kg": 1.85,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 5,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 365.838855250103,
+          "payload_kg": 2.59,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 6,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 407.4283638999611,
+          "payload_kg": 3.37,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 7,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 448.4652568880694,
+          "payload_kg": 0.79,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 8,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 636.5206310513832,
+          "payload_kg": 2.92,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 9,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 767.35467409601,
+          "payload_kg": 3.42,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 10,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 814.9221423809084,
+          "payload_kg": 2.99,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 11,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 911.2917628935932,
+          "payload_kg": 2.61,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 12,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 915.9825169192819,
+          "payload_kg": 3.46,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 13,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 1109.3040289315388,
+          "payload_kg": 1.33,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 14,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 1210.277516484987,
+          "payload_kg": 1.61,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 15,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 1233.787368130361,
+          "payload_kg": 2.33,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 16,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1252.5576066662725,
+          "payload_kg": 0.99,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 17,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1300.2733933357074,
+          "payload_kg": 2.55,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 18,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1485.330066800458,
+          "payload_kg": 2.97,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 19,
+          "origin": "DS_ARERA",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 1648.8291291760418,
+          "payload_kg": 0.7,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 20,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 1893.1704323235401,
+          "payload_kg": 1.14,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 21,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_BAWADIA",
+          "created_at_s": 1962.3315203493776,
+          "payload_kg": 0.93,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 22,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 1977.3708324575284,
+          "payload_kg": 2.74,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 23,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 2033.3083339264426,
+          "payload_kg": 1.59,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 24,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_BAWADIA",
+          "created_at_s": 2625.7180117269427,
+          "payload_kg": 0.77,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 25,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 2630.544261487532,
+          "payload_kg": 2.38,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 26,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 2787.604144640579,
+          "payload_kg": 1.65,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 27,
+          "origin": "DS_ARERA",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 2878.210571813103,
+          "payload_kg": 3.41,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 28,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 3075.380344256225,
+          "payload_kg": 2.55,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 29,
+          "origin": "DS_ARERA",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 3152.3767588320757,
+          "payload_kg": 0.83,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 30,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA1",
+          "created_at_s": 3209.4281736905264,
+          "payload_kg": 3.36,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 31,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 3418.0570188290976,
+          "payload_kg": 2.02,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 32,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 3429.3079331048166,
+          "payload_kg": 3.03,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 33,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 3500.167092894736,
+          "payload_kg": 1.62,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 34,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_ARERA1",
+          "created_at_s": 3517.787010870204,
+          "payload_kg": 2.3,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 35,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 3584.848448646339,
+          "payload_kg": 3.14,
+          "sla_seconds": 900.0
+        }
+      ],
+      "results": [
+        {
+          "order_id": 0,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 110.30865786510142,
+          "cost_inr": 3.3092597359530425,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 1,
+          "status": "delivered",
+          "vehicle_id": "rider_1",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 174.41330224498358,
+          "cost_inr": 5.232399067349508,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 2,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 174.41330224498358,
+          "cost_inr": 5.232399067349508,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 3,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1025.9298221613406,
+          "cost_inr": 30.77789466484022,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 4,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 174.41330224498358,
+          "cost_inr": 5.232399067349508,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 5,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1233.288287465668,
+          "cost_inr": 36.99864862397004,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 6,
+          "status": "delivered",
+          "vehicle_id": "rider_1",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1674.7310231795436,
+          "cost_inr": 50.2419306953863,
+          "path": [
+            "DS_ARERA",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 7,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 8,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 942.4775859403766,
+          "cost_inr": 28.2743275782113,
+          "path": [
+            "DS_KOLAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 9,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 10,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 11,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 12,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 13,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 14,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 15,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 16,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1025.9298221613406,
+          "cost_inr": 30.77789466484022,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 17,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 18,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 19,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 110.30865786510142,
+          "cost_inr": 3.3092597359530425,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 20,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 454.81424779793343,
+          "cost_inr": 13.644427433938002,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_HABIBGANJ"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 21,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1323.7038943812172,
+          "cost_inr": 39.71111683143651,
+          "path": [
+            "DS_KOLAR",
+            "DEL_BAWADIA"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 22,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 23,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 24,
+          "status": "delivered",
+          "vehicle_id": "rider_1",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 468.0,
+          "cost_inr": 14.04,
+          "path": [
+            "DS_ARERA",
+            "DEL_BAWADIA"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 25,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1233.288287465668,
+          "cost_inr": 36.99864862397004,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 26,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 768.2109085400963,
+          "cost_inr": 23.046327256202886,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 27,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 28,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 29,
+          "status": "delivered",
+          "vehicle_id": "rider_1",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 739.9729724794008,
+          "cost_inr": 22.199189174382028,
+          "path": [
+            "DS_ARERA",
+            "DEL_HABIBGANJ"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 30,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 31,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 246.65765749313363,
+          "cost_inr": 7.399729724794009,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 32,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 33,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 34,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 35,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 454.81424779793343,
+          "cost_inr": 13.644427433938002,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_HABIBGANJ"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        }
+      ],
+      "summary": {
+        "fleet_mode": "riders_only",
+        "total_orders": 36,
+        "delivered": 18,
+        "failed": 18,
+        "failure_rate": 0.5,
+        "sla_violations": 7,
+        "p50_delivery_time_s": 739.9729724794008,
+        "p95_delivery_time_s": 1674.7310231795436,
+        "avg_cost_inr": 20.55945996554801,
+        "orders_per_hour_actual": 18.0
+      }
+    },
+    "mixed": {
+      "orders": [
+        {
+          "id": 0,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 102.0060287274801,
+          "payload_kg": 1.23,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 1,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 117.0346028886648,
+          "payload_kg": 2.27,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 2,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 120.26447411220309,
+          "payload_kg": 1.2,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 3,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 212.3995073841512,
+          "payload_kg": 2.65,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 4,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 333.23942386972834,
+          "payload_kg": 1.85,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 5,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 365.838855250103,
+          "payload_kg": 2.59,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 6,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 407.4283638999611,
+          "payload_kg": 3.37,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 7,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 448.4652568880694,
+          "payload_kg": 0.79,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 8,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 636.5206310513832,
+          "payload_kg": 2.92,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 9,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 767.35467409601,
+          "payload_kg": 3.42,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 10,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 814.9221423809084,
+          "payload_kg": 2.99,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 11,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 911.2917628935932,
+          "payload_kg": 2.61,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 12,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 915.9825169192819,
+          "payload_kg": 3.46,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 13,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 1109.3040289315388,
+          "payload_kg": 1.33,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 14,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 1210.277516484987,
+          "payload_kg": 1.61,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 15,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 1233.787368130361,
+          "payload_kg": 2.33,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 16,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1252.5576066662725,
+          "payload_kg": 0.99,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 17,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1300.2733933357074,
+          "payload_kg": 2.55,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 18,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR2",
+          "created_at_s": 1485.330066800458,
+          "payload_kg": 2.97,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 19,
+          "origin": "DS_ARERA",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 1648.8291291760418,
+          "payload_kg": 0.7,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 20,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 1893.1704323235401,
+          "payload_kg": 1.14,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 21,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_BAWADIA",
+          "created_at_s": 1962.3315203493776,
+          "payload_kg": 0.93,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 22,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 1977.3708324575284,
+          "payload_kg": 2.74,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 23,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_OLDCITY1",
+          "created_at_s": 2033.3083339264426,
+          "payload_kg": 1.59,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 24,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_BAWADIA",
+          "created_at_s": 2625.7180117269427,
+          "payload_kg": 0.77,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 25,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 2630.544261487532,
+          "payload_kg": 2.38,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 26,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 2787.604144640579,
+          "payload_kg": 1.65,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 27,
+          "origin": "DS_ARERA",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 2878.210571813103,
+          "payload_kg": 3.41,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 28,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_ARERA2",
+          "created_at_s": 3075.380344256225,
+          "payload_kg": 2.55,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 29,
+          "origin": "DS_ARERA",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 3152.3767588320757,
+          "payload_kg": 0.83,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 30,
+          "origin": "DS_ARERA",
+          "destination": "DEL_ARERA1",
+          "created_at_s": 3209.4281736905264,
+          "payload_kg": 3.36,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 31,
+          "origin": "DS_ARERA",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 3418.0570188290976,
+          "payload_kg": 2.02,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 32,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_MPNAGAR1",
+          "created_at_s": 3429.3079331048166,
+          "payload_kg": 3.03,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 33,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_KOLAR1",
+          "created_at_s": 3500.167092894736,
+          "payload_kg": 1.62,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 34,
+          "origin": "DS_KOLAR",
+          "destination": "DEL_ARERA1",
+          "created_at_s": 3517.787010870204,
+          "payload_kg": 2.3,
+          "sla_seconds": 900.0
+        },
+        {
+          "id": 35,
+          "origin": "DS_MPNAGAR",
+          "destination": "DEL_HABIBGANJ",
+          "created_at_s": 3584.848448646339,
+          "payload_kg": 3.14,
+          "sla_seconds": 900.0
+        }
+      ],
+      "results": [
+        {
+          "order_id": 0,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4187393852310199,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 1,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5559336602784991,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 2,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5195427995162358,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 3,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5692728670642968,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 4,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5414416736839471,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 5,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 246.65765749313363,
+          "cost_inr": 7.399729724794009,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 6,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5951294769475665,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 7,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 546.0,
+          "cost_inr": 16.38,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_OLDCITY1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 8,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4651287117491545,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 9,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5969530223069923,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 10,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.46712037984863425,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 11,
+          "status": "delivered",
+          "vehicle_id": "drone_2",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.5678586549933081,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 12,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4806340441179014,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 13,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 546.0,
+          "cost_inr": 16.38,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_OLDCITY1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 14,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 246.65765749313363,
+          "cost_inr": 7.399729724794009,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 15,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 47.504084386548186,
+          "cost_inr": 0.558025567574061,
+          "path": [
+            "DS_ARERA",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 16,
+          "status": "delivered",
+          "vehicle_id": "drone_3",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 443.0157457749354,
+          "cost_inr": 2.7820715078674234,
+          "path": [
+            "DS_MPNAGAR",
+            "WP_HABIBGANJ",
+            "WP_KATARA",
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 17,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1025.9298221613406,
+          "cost_inr": 30.77789466484022,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 18,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 174.41330224498358,
+          "cost_inr": 5.232399067349508,
+          "path": [
+            "DS_KOLAR",
+            "DEL_KOLAR2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 19,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.4048802196436276,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 20,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 454.81424779793343,
+          "cost_inr": 13.644427433938002,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_HABIBGANJ"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 21,
+          "status": "delivered",
+          "vehicle_id": "drone_1",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 138.37020018322278,
+          "cost_inr": 1.0299492582966787,
+          "path": [
+            "DS_ARERA",
+            "WP_BAWADIA",
+            "DEL_BAWADIA"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 22,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.46003248559013277,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 23,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 964.8067163945325,
+          "cost_inr": 28.944201491835972,
+          "path": [
+            "DS_KOLAR",
+            "DEL_OLDCITY1"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 24,
+          "status": "delivered",
+          "vehicle_id": "rider_1",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 468.0,
+          "cost_inr": 14.04,
+          "path": [
+            "DS_ARERA",
+            "DEL_BAWADIA"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 25,
+          "status": "delivered",
+          "vehicle_id": "rider_0",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1233.288287465668,
+          "cost_inr": 36.99864862397004,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_KOLAR1"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 26,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 768.2109085400963,
+          "cost_inr": 23.046327256202886,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 27,
+          "status": "delivered",
+          "vehicle_id": "drone_0",
+          "vehicle_kind": "drone",
+          "delivery_time_s": 30.044220964466973,
+          "cost_inr": 0.47918481314858324,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_MPNAGAR1"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 28,
+          "status": "delivered",
+          "vehicle_id": "rider_2",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 1608.011193990888,
+          "cost_inr": 48.24033581972664,
+          "path": [
+            "DS_KOLAR",
+            "DEL_ARERA2"
+          ],
+          "sla_violated": true,
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 29,
+          "status": "delivered",
+          "vehicle_id": "rider_1",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 739.9729724794008,
+          "cost_inr": 22.199189174382028,
+          "path": [
+            "DS_ARERA",
+            "DEL_HABIBGANJ"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        },
+        {
+          "order_id": 30,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 31,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 32,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 33,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 34,
+          "status": "failed",
+          "reason": "no feasible vehicle (battery/no-fly/fleet exhausted)",
+          "penalty": 2000.0
+        },
+        {
+          "order_id": 35,
+          "status": "delivered",
+          "vehicle_id": "rider_3",
+          "vehicle_kind": "rider",
+          "delivery_time_s": 454.81424779793343,
+          "cost_inr": 13.644427433938002,
+          "path": [
+            "DS_MPNAGAR",
+            "DEL_HABIBGANJ"
+          ],
+          "sla_violated": false,
+          "penalty": 0.0
+        }
+      ],
+      "summary": {
+        "fleet_mode": "mixed",
+        "total_orders": 36,
+        "delivered": 31,
+        "failed": 5,
+        "failure_rate": 0.1388888888888889,
+        "sla_violations": 4,
+        "p50_delivery_time_s": 138.37020018322278,
+        "p95_delivery_time_s": 1233.288287465668,
+        "avg_cost_inr": 9.54255512721385,
+        "orders_per_hour_actual": 31.0
+      }
+    }
+  },
+  "optimality_gap_demo": {
+    "greedy_cost": 2192.1489659254585,
+    "greedy_time_ms": 2.778768539428711,
+    "optimal_cost": 2192.148965925458,
+    "optimal_time_ms": 402.26006507873535,
+    "optimality_gap_pct": 2.074436354257904e-14
+  }
+}

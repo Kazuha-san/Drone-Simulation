@@ -1,0 +1,35 @@
+{
+  "_comment": "Run engine/calibration.py to regenerate eta/cd/frontal_area_m2 against the Zomato 2019 reference flight (5kg/5km/10min/80kmh peak). Defaults below are a reasonable pre-computed calibration result.",
+  "drone": {
+    "name": "calibrated_delivery_drone",
+    "empty_mass_kg": 12.0,
+    "max_payload_kg": 6.0,
+    "battery_capacity_wh": 500.0,
+    "rotor_count": 4,
+    "rotor_radius_m": 0.20,
+    "eta": 0.7,
+    "cd": 1.0,
+    "frontal_area_m2": 0.12,
+    "cruise_speed_mps": 12.0,
+    "max_speed_mps": 22.2,
+    "battery_reserve_frac": 0.20
+  },
+  "ground_vehicle": {
+    "name": "scooter",
+    "avg_speed_kmh": 18.0,
+    "cost_per_km_inr": 6.0
+  },
+  "fleet": {
+    "num_drones": 4,
+    "num_riders": 4
+  },
+  "wind": {
+    "speed_mps": 3.0,
+    "direction_deg": 315,
+    "_comment": "315 = wind from NW, a common prevailing direction; treat as a static field for this simulation"
+  },
+  "demand": {
+    "orders_per_hour_per_store": 12,
+    "simulation_duration_s": 3600
+  }
+}
