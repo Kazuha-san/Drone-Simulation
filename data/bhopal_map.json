@@ -7,12 +7,20 @@
     { "id": "DS_KOLAR",     "x": 900,  "y": 1500, "kind": "dark_store" },
 
     { "id": "WP_NEWMARKET", "x": 1000, "y": 800,  "kind": "waypoint" },
-    { "id": "WP_TT_NAGAR",  "x": 950,  "y": 700,  "kind": "waypoint" },
+    { "id": "WP_TT_NAGAR",  "x": 930,  "y": 770,  "kind": "waypoint", "_comment": "Repositioned south of Upper Lake polygon" },
     { "id": "WP_HABIBGANJ", "x": 1300, "y": 1000, "kind": "waypoint" },
     { "id": "WP_BAIRAGARH", "x": 600,  "y": 500,  "kind": "waypoint" },
     { "id": "WP_KATARA",    "x": 1250, "y": 1300, "kind": "waypoint" },
     { "id": "WP_BAWADIA",   "x": 1450, "y": 850,  "kind": "waypoint" },
-    { "id": "WP_OLDCITY",   "x": 800,  "y": 950,  "kind": "waypoint" },
+    { "id": "WP_OLDCITY",   "x": 820,  "y": 990,  "kind": "waypoint", "_comment": "Repositioned below Lower Lake polygon" },
+
+    { "id": "WP_GOVINDPURA",  "x": 700,  "y": 1200, "kind": "waypoint", "_comment": "West corridor between Old City area and Kolar, avoids Lower Lake" },
+    { "id": "WP_SHAHPURA",    "x": 1200, "y": 750,  "kind": "waypoint", "_comment": "Central hub north of MP Nagar, routes around VVIP zone" },
+    { "id": "WP_CHUNABHATTI",  "x": 1100, "y": 1150, "kind": "waypoint", "_comment": "Mid-south connector between Habibganj and Katara/Kolar" },
+    { "id": "WP_MISROD",       "x": 1400, "y": 1200, "kind": "waypoint", "_comment": "Southeast corridor, connects Katara/Bawadia area" },
+    { "id": "WP_PIPLANI",     "x": 1600, "y": 800,  "kind": "waypoint", "_comment": "Eastern corridor beyond Arera" },
+    { "id": "WP_ASHOKA",       "x": 850,  "y": 1100, "kind": "waypoint", "_comment": "South of Old City, above Kolar — avoids Lower Lake going south" },
+    { "id": "WP_LAKESIDE",     "x": 650,  "y": 780,  "kind": "waypoint", "_comment": "Southwest of Upper Lake, routes around lake to Bairagarh" },
 
     { "id": "DEL_ARERA1",   "x": 1600, "y": 500,  "kind": "delivery_zone" },
     { "id": "DEL_ARERA2",   "x": 1550, "y": 700,  "kind": "delivery_zone" },
@@ -20,14 +28,17 @@
     { "id": "DEL_KOLAR2",   "x": 1000, "y": 1550, "kind": "delivery_zone" },
     { "id": "DEL_MPNAGAR1", "x": 1150, "y": 950,  "kind": "delivery_zone" },
     { "id": "DEL_HABIBGANJ","x": 1350, "y": 1050, "kind": "delivery_zone" },
-    { "id": "DEL_OLDCITY1", "x": 750,  "y": 900,  "kind": "delivery_zone" },
-    { "id": "DEL_BAWADIA",  "x": 1500, "y": 900,  "kind": "delivery_zone" }
+    { "id": "DEL_OLDCITY1", "x": 810,  "y": 900,  "kind": "delivery_zone", "_comment": "Repositioned east of Lower Lake polygon" },
+    { "id": "DEL_BAWADIA",  "x": 1500, "y": 900,  "kind": "delivery_zone" },
+    { "id": "DEL_GOVINDPURA", "x": 650,  "y": 1300, "kind": "delivery_zone", "_comment": "Western residential cluster near Govindpura" },
+    { "id": "DEL_PIPLANI",    "x": 1700, "y": 750,  "kind": "delivery_zone", "_comment": "Far-east delivery zone beyond Piplani" }
   ],
 
   "edges": [
     { "a": "DS_MPNAGAR", "b": "WP_NEWMARKET" },
     { "a": "WP_NEWMARKET", "b": "WP_TT_NAGAR" },
-    { "a": "WP_TT_NAGAR", "b": "WP_BAIRAGARH" },
+    { "a": "WP_TT_NAGAR", "b": "WP_LAKESIDE", "_comment": "Routes around Upper Lake southwest" },
+    { "a": "WP_LAKESIDE", "b": "WP_BAIRAGARH", "_comment": "Continues west to Bairagarh" },
     { "a": "WP_NEWMARKET", "b": "WP_OLDCITY" },
     { "a": "WP_OLDCITY", "b": "DEL_OLDCITY1" },
     { "a": "DS_MPNAGAR", "b": "DEL_MPNAGAR1" },
@@ -42,7 +53,30 @@
     { "a": "WP_BAWADIA", "b": "DS_ARERA" },
     { "a": "DS_ARERA", "b": "DEL_ARERA1" },
     { "a": "DS_ARERA", "b": "DEL_ARERA2" },
-    { "a": "DEL_ARERA2", "b": "WP_BAWADIA" }
+    { "a": "DEL_ARERA2", "b": "WP_BAWADIA" },
+
+    { "a": "WP_OLDCITY", "b": "WP_ASHOKA", "_comment": "South bypass around Lower Lake" },
+    { "a": "WP_ASHOKA", "b": "WP_GOVINDPURA", "_comment": "West-south corridor" },
+    { "a": "WP_GOVINDPURA", "b": "DEL_GOVINDPURA" },
+    { "a": "WP_ASHOKA", "b": "DS_KOLAR", "_comment": "Direct south route to Kolar" },
+    { "a": "WP_ASHOKA", "b": "WP_CHUNABHATTI", "_comment": "Mid-south cross-link" },
+
+    { "a": "DS_MPNAGAR", "b": "WP_SHAHPURA", "_comment": "North hub connection" },
+    { "a": "WP_SHAHPURA", "b": "WP_BAWADIA", "_comment": "East corridor via Shahpura" },
+    { "a": "WP_SHAHPURA", "b": "WP_HABIBGANJ", "_comment": "South link from Shahpura" },
+
+    { "a": "WP_HABIBGANJ", "b": "WP_CHUNABHATTI", "_comment": "South from Habibganj" },
+    { "a": "WP_CHUNABHATTI", "b": "WP_KATARA", "_comment": "South-to-Kolar connector" },
+    { "a": "WP_CHUNABHATTI", "b": "WP_MISROD", "_comment": "Southeast corridor" },
+    { "a": "WP_MISROD", "b": "DEL_BAWADIA", "_comment": "Alternate Bawadia delivery route" },
+    { "a": "WP_MISROD", "b": "WP_KATARA", "_comment": "Misrod-Katara link" },
+    { "a": "DEL_KOLAR2", "b": "WP_CHUNABHATTI", "_comment": "Kolar2 alternate path north" },
+
+    { "a": "WP_BAWADIA", "b": "WP_PIPLANI", "_comment": "East expansion" },
+    { "a": "WP_PIPLANI", "b": "DEL_PIPLANI", "_comment": "Far-east delivery" },
+    { "a": "WP_PIPLANI", "b": "DS_ARERA", "_comment": "East loop back to Arera" },
+
+    { "a": "WP_GOVINDPURA", "b": "DS_KOLAR", "_comment": "West approach to Kolar" }
   ],
 
   "no_fly_zones": [

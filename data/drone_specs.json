@@ -1,5 +1,11 @@
 {
-  "_comment": "Run engine/calibration.py to regenerate eta/cd/frontal_area_m2 against the Zomato 2019 reference flight (5kg/5km/10min/80kmh peak). Defaults below are a reasonable pre-computed calibration result.",
+  "_comment": "Run engine/calibration.py to regenerate eta/cd/frontal_area_m2. These are its actual output, not hand-picked values.",
+  "_calibration_changelog": [
+    "eta 0.70 -> 0.60, frontal_area_m2 0.12 -> 0.10 (cd unchanged at 1.0).",
+    "Why: the previous values were never produced by a working fit. calibration.py scored candidates on trip TIME, but time in physics.py depends only on cruise speed and wind, not on eta/cd/frontal_area - so every grid point tied and the search returned whichever was enumerated first. Rebuilt to fit on energy anchors (hover endurance -> eta; cruise Wh/km at peak speed -> cd*frontal_area), with an identifiability assertion that fails loudly if the score ever goes flat in its parameters again.",
+    "Fit quality: hover endurance 12.1 min vs 12.0 target; 27.7 Wh/km vs 28.0 target; residual 0.023. The Zomato 5kg/5km reference flight is feasible at 76% of usable capacity.",
+    "Note: cd and frontal_area_m2 are not separately identifiable - only their product (0.10) is. cd is pinned at the conventional 1.0 to break the tie."
+  ],
   "drone": {
     "name": "calibrated_delivery_drone",
     "empty_mass_kg": 12.0,
@@ -7,9 +13,9 @@
     "battery_capacity_wh": 500.0,
     "rotor_count": 4,
     "rotor_radius_m": 0.20,
-    "eta": 0.7,
+    "eta": 0.6,
     "cd": 1.0,
-    "frontal_area_m2": 0.12,
+    "frontal_area_m2": 0.10,
     "cruise_speed_mps": 12.0,
     "max_speed_mps": 22.2,
     "battery_reserve_frac": 0.20

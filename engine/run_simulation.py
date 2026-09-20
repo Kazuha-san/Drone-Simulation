@@ -10,18 +10,33 @@ Usage:
 """
 
 import json
+import math
 import os
 import sys
+import time
+from collections import Counter
 
 sys.path.insert(0, os.path.dirname(__file__))
 
 from physics import DroneSpecs, GroundVehicleSpecs
 from graph import CityGraph
 from optimizer import (
-    Vehicle, Weights, generate_orders, greedy_assign, brute_force_assign,
+    Vehicle, Weights, assignment_cost, generate_orders, greedy_assign,
+    brute_force_assign, clear_path_cache,
 )
 
 DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+
+# Seconds to swap a fresh battery into a returned drone at the dark store.
+# Real delivery-drone fleets swap packs rather than charge in place, because
+# charging a 500Wh pack takes far longer than a delivery cycle. Without this,
+# drones drain monotonically and the fleet dies a few orders into the run.
+#
+# This lives here rather than in data/drone_specs.json because that file is
+# shared with the physics owner; if the team wants it configurable, add a
+# "battery_swap_s" key under "fleet" and it will be picked up automatically.
+# Set to None to model a fleet with no spare batteries (harsher, useful A/B).
+DEFAULT_BATTERY_SWAP_S = 300.0
 
 
 def load_config():
@@ -34,17 +49,27 @@ def build_vehicles(cfg, graph) -> list[Vehicle]:
     dark_stores = [n.id for n in graph.nodes.values() if n.kind == "dark_store"]
     drone_specs = DroneSpecs(**cfg["drone"])
     ground_specs = GroundVehicleSpecs(**cfg["ground_vehicle"])
+    swap_s = cfg["fleet"].get("battery_swap_s", DEFAULT_BATTERY_SWAP_S)
 
     vehicles = []
     for i in range(cfg["fleet"]["num_drones"]):
         home = dark_stores[i % len(dark_stores)]
         vehicles.append(Vehicle(id=f"drone_{i}", kind="drone", home_node=home,
-                                 soc_frac=1.0, specs=drone_specs))
+                                 soc_frac=1.0, specs=drone_specs,
+                                 battery_swap_s=swap_s))
     for i in range(cfg["fleet"]["num_riders"]):
         home = dark_stores[i % len(dark_stores)]
         vehicles.append(Vehicle(id=f"rider_{i}", kind="rider", home_node=home,
                                  soc_frac=1.0, specs=ground_specs))
     return vehicles
+
+
+def percentile(sorted_list, p):
+    """Nearest-rank percentile. Returns 0 for an empty sample."""
+    if not sorted_list:
+        return 0
+    idx = max(0, math.ceil(p * len(sorted_list)) - 1)
+    return sorted_list[idx]
 
 
 def run_scenario(graph, cfg, fleet_mode: str) -> dict:
@@ -73,14 +98,9 @@ def run_scenario(graph, cfg, fleet_mode: str) -> dict:
 
     delivered = [r for r in results if r["status"] == "delivered"]
     failed = [r for r in results if r["status"] == "failed"]
-    times = sorted(r["delivery_time_s"] for r in delivered) if delivered else [0]
+    times = sorted(r["delivery_time_s"] for r in delivered) if delivered else []
     sla_violations = sum(1 for r in delivered if r.get("sla_violated"))
-
-    def percentile(sorted_list, p):
-        if not sorted_list:
-            return 0
-        idx = min(len(sorted_list) - 1, int(len(sorted_list) * p))
-        return sorted_list[idx]
+    by_kind = Counter(r["vehicle_kind"] for r in delivered)
 
     summary = {
         "fleet_mode": fleet_mode,
@@ -89,65 +109,90 @@ def run_scenario(graph, cfg, fleet_mode: str) -> dict:
         "failed": len(failed),
         "failure_rate": len(failed) / len(orders) if orders else 0,
         "sla_violations": sla_violations,
+        "sla_compliance": 1 - sla_violations / len(delivered) if delivered else 0,
         "p50_delivery_time_s": percentile(times, 0.5),
         "p95_delivery_time_s": percentile(times, 0.95),
+        "avg_delivery_time_s": sum(times) / len(times) if times else 0,
         "avg_cost_inr": sum(r["cost_inr"] for r in delivered) / len(delivered) if delivered else 0,
         "orders_per_hour_actual": len(delivered) / (cfg["demand"]["simulation_duration_s"] / 3600),
+        # Why orders failed, not just how many — "every drone was airborne" and
+        # "no drone had the charge" lead to opposite operational conclusions.
+        "failure_reasons": dict(Counter(r["reason"] for r in failed)),
+        "delivered_by_kind": dict(by_kind),
+        "repositioned_deliveries": sum(1 for r in delivered if r.get("repositioned")),
+        "total_objective_cost": sum(r["objective_cost"] for r in results),
     }
 
     return {"orders": [vars(o) for o in orders], "results": results, "summary": summary}
 
 
 def run_optimality_gap_demo(graph, cfg) -> dict:
-    """Small-batch greedy vs brute-force comparison for the judge-facing demo."""
+    """
+    Small-batch greedy vs brute-force comparison for the judge-facing demo.
+
+    Both solvers score through optimizer.assignment_cost, so the gap reflects
+    heuristic quality only. Greedy's reported cost is the sum of the per-order
+    objective values it actually chose — not a separately re-derived formula
+    that could silently drift from what brute force measures.
+    """
     dark_stores = [n.id for n in graph.nodes.values() if n.kind == "dark_store"]
     delivery_nodes = [n.id for n in graph.nodes.values() if n.kind == "delivery_zone"]
     small_orders = generate_orders(600, 30, dark_stores, delivery_nodes, seed=7)[:5]
 
-    vehicles = build_vehicles(cfg, graph)[:3]
     weights = Weights()
 
-    import time
     t0 = time.time()
-    greedy_results = greedy_assign(small_orders, vehicles, graph, weights)
+    greedy_results = greedy_assign(small_orders, build_vehicles(cfg, graph)[:3],
+                                    graph, weights)
     greedy_ms = (time.time() - t0) * 1000
-    greedy_cost = sum(
-        weights.alpha_time * r.get("delivery_time_s", 0) + weights.beta_cost * r.get("cost_inr", 0) + r.get("penalty", 0)
-        for r in greedy_results
-    )
+    greedy_cost = sum(r["objective_cost"] for r in greedy_results)
 
-    vehicles2 = build_vehicles(cfg, graph)[:3]
     t0 = time.time()
-    bf = brute_force_assign(small_orders, vehicles2, graph, weights)
+    bf = brute_force_assign(small_orders, build_vehicles(cfg, graph)[:3], graph, weights)
     bf_ms = (time.time() - t0) * 1000
 
-    gap_pct = (greedy_cost - bf["best_total_cost"]) / bf["best_total_cost"] * 100 if bf["best_total_cost"] else 0
+    gap_pct = ((greedy_cost - bf["best_total_cost"]) / bf["best_total_cost"] * 100
+               if bf["best_total_cost"] else 0)
 
     return {
+        "orders_in_batch": len(small_orders),
         "greedy_cost": greedy_cost, "greedy_time_ms": greedy_ms,
         "optimal_cost": bf["best_total_cost"], "optimal_time_ms": bf_ms,
         "optimality_gap_pct": gap_pct,
+        "speedup_x": bf_ms / greedy_ms if greedy_ms else 0,
     }
 
 
 def main():
     graph = CityGraph.from_json(os.path.join(DATA_DIR, "bhopal_map.json"))
     cfg = load_config()
+    clear_path_cache()
 
-    drone_scenario = run_scenario(graph, cfg, "drones_only")
-    rider_scenario = run_scenario(graph, cfg, "riders_only")
-    mixed_scenario = run_scenario(graph, cfg, "mixed")
+    # Enforce the objective's dominance invariant before anything runs, so a
+    # miscalibrated gamma_fail fails loudly here instead of quietly producing
+    # a nonsense optimality gap downstream (CLAUDE.md constraint #2).
+    Weights().validate()
 
-    print("=== DRONES ONLY ===")
-    print(json.dumps(drone_scenario["summary"], indent=2))
-    print("=== RIDERS ONLY (baseline) ===")
-    print(json.dumps(rider_scenario["summary"], indent=2))
-    print("=== MIXED FLEET ===")
-    print(json.dumps(mixed_scenario["summary"], indent=2))
+    scenarios = {
+        mode: run_scenario(graph, cfg, mode)
+        for mode in ("drones_only", "riders_only", "mixed")
+    }
+
+
+    for mode, label in (("drones_only", "DRONES ONLY"),
+                        ("riders_only", "RIDERS ONLY (baseline)"),
+                        ("mixed", "MIXED FLEET")):
+        print(f"=== {label} ===")
+        print(json.dumps(scenarios[mode]["summary"], indent=2))
 
     print("\n=== OPTIMALITY GAP DEMO (greedy vs brute-force, 5 orders) ===")
     gap = run_optimality_gap_demo(graph, cfg)
     print(json.dumps(gap, indent=2))
+    if abs(gap["optimality_gap_pct"]) > 10:
+        print("\n!! WARNING: optimality gap is large. Before trusting this run, check "
+              "that greedy and brute force still score through the same "
+              "optimizer.assignment_cost — a mismatched objective, not a worse "
+              "heuristic, is the usual cause. See CLAUDE.md constraint #2.")
 
     trace = {
         "map": {
@@ -157,18 +202,14 @@ def main():
                 for z in graph.no_fly_zones
             ],
         },
-        "scenarios": {
-            "drones_only": drone_scenario,
-            "riders_only": rider_scenario,
-            "mixed": mixed_scenario,
-        },
+        "scenarios": scenarios,
         "optimality_gap_demo": gap,
     }
 
-    out_path = os.path.join(DATA_DIR, "trace.json")
+    out_path = os.path.normpath(os.path.join(DATA_DIR, "trace.json"))
     with open(out_path, "w") as f:
         json.dump(trace, f, indent=2)
-    print(f"\nTrace written to {out_path} — load this in the frontend.")
+    print(f"\nTrace written to {out_path} - load this in the frontend.")
 
 
 if __name__ == "__main__":

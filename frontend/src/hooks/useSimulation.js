@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { SCENARIOS, MAP_CONFIG, DRONE_SPECS, GROUND_SPECS } from "../data/mockSimulation";
+import { SCENARIOS, DRONE_SPECS, GROUND_SPECS } from "../data/simulationAdapter";
+import { MAP_CONFIG } from "../data/mapVisuals";
 
 export function useSimulation() {
   const [activeScenarioId, setActiveScenarioId] = useState("baseline");
