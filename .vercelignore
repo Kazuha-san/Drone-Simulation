@@ -1,0 +1,9 @@
+# The deploy builds only frontend/ — the Python engine and its canonical data
+# artifacts are not needed on Vercel. The frontend has its own committed copies
+# of the two generated files it imports (frontend/src/data/*.json), produced by
+# the engine locally and committed to git.
+engine/
+data/
+docs/
+*.md
+!frontend/README.md
