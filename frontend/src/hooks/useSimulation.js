@@ -7,7 +7,12 @@ export function useSimulation() {
   const [isPlaying, setIsPlaying] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
   const [currentTime, setCurrentTime] = useState(450); // Immediate rich action on launch
-  const [selectedOrderId, setSelectedOrderId] = useState("ORD-105");
+  // Seeded from real data rather than a fixed id: order ids now come from the
+  // engine (`order_<n>`), so the old hardcoded "ORD-105" never matched and the
+  // detail panel opened empty.
+  const [selectedOrderId, setSelectedOrderId] = useState(
+    () => SCENARIOS.baseline?.orders[0]?.id || null
+  );
   const [hoveredOrderId, setHoveredOrderId] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null); // 'drone' | 'ground' | null
   const [layerToggles, setLayerToggles] = useState({
@@ -32,7 +37,7 @@ export function useSimulation() {
     droneTrajectoryProgress: { currentIndex: 0, progress: 0 },
     groundTrajectoryProgress: { currentIndex: 0, progress: 0 },
     pulseTime: 0,
-    selectedOrderId: "ORD-105",
+    selectedOrderId: null,
     hoveredOrderId: null,
     selectedVehicle: null,
     hoveredVehicle: null,
