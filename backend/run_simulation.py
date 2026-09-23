@@ -25,7 +25,7 @@ from optimizer import (
     greedy_assign, brute_force_assign, clear_path_cache,
 )
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 
 # Seconds to swap a fresh battery into a returned drone at the dark store.
 # Real delivery-drone fleets swap packs rather than charge in place, because

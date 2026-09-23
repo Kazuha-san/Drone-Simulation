@@ -17,7 +17,10 @@ export function SimulationMap({
   onSelectVehicle,
   layerToggles,
   onToggleLayer,
-  events = []
+  events = [],
+  justCompletedOrders = [],
+  noFlyZones = null,
+  weather = null
 }) {
   const containerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -26,6 +29,16 @@ export function SimulationMap({
   const dragStartRef = useRef({ x: 0, y: 0 });
   const totalDragDistRef = useRef(0);
   const [cursorStyle, setCursorStyle] = useState("grab");
+  const [bubbleScreenPositions, setBubbleScreenPositions] = useState([]);
+
+  // Active no-fly zones for THIS run's obstacle preset. Zone polygons are
+  // real geometry shared with the engine (both sourced from
+  // bhopal_basemap.json), so only which ones are drawn changes — never the
+  // shapes — by filtering mapConfig's full zone set down to the active names.
+  const activeZoneNames = noFlyZones ? new Set(noFlyZones.map((z) => z.name)) : null;
+  const effectiveMapConfig = activeZoneNames
+    ? { ...mapConfig, noFlyZones: (mapConfig.noFlyZones || []).filter((z) => activeZoneNames.has(z.name)) }
+    : mapConfig;
 
   // Initial fit to ensure operational area is immediately framed
   useEffect(() => {
@@ -62,7 +75,7 @@ export function SimulationMap({
       camera.applyTransform(ctx);
 
       // 1. Base Map Layer (Grid, Parks, Lakes, Blocks, Buildings, Layered Roads, NFZ, Depot, District Labels)
-      renderBaseMap(ctx, mapConfig, {
+      renderBaseMap(ctx, effectiveMapConfig, {
         showBlocks: activeToggles.showBlocks,
         showZones: activeToggles.showZones,
         showLabels: activeToggles.showLabels,
@@ -111,7 +124,37 @@ export function SimulationMap({
 
     animId = requestAnimationFrame(render);
     return () => cancelAnimationFrame(animId);
-  }, [mapConfig, simulationRef, layerToggles]);
+  }, [mapConfig, simulationRef, layerToggles, noFlyZones]);
+
+  // Popup bubbles for just-completed orders — screen position follows the
+  // camera. Throttled to ~12fps (not every animation frame): bubbles are
+  // anchored to a fixed world point and only need repositioning while the
+  // camera is actively panning/zooming, so updating this at 60fps was
+  // forcing an unnecessary React re-render every frame for no visible gain.
+  useEffect(() => {
+    let animId;
+    let lastUpdate = 0;
+    const INTERVAL_MS = 80;
+    const tick = (now) => {
+      if (now - lastUpdate >= INTERVAL_MS) {
+        lastUpdate = now;
+        const camera = cameraRef.current;
+        if (justCompletedOrders.length === 0) {
+          setBubbleScreenPositions((prev) => (prev.length ? [] : prev));
+        } else {
+          setBubbleScreenPositions(
+            justCompletedOrders.map((o) => {
+              const pt = camera.worldToScreen(o.x, o.y);
+              return { id: o.id, x: pt.x, y: pt.y, order: o };
+            })
+          );
+        }
+      }
+      animId = requestAnimationFrame(tick);
+    };
+    animId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(animId);
+  }, [justCompletedOrders]);
 
   // Dynamic ResizeObserver for Crisp HiDPI Canvas
   useEffect(() => {
@@ -263,8 +306,17 @@ export function SimulationMap({
     if (onSelectVehicle) onSelectVehicle(null);
   };
 
-  // Mouse Wheel Zooming towards Cursor
-  const handleWheel = (e) => {
+  // Mouse Wheel Zooming towards Cursor.
+  // NOTE: this must NOT be wired via React's onWheel prop — React attaches
+  // wheel listeners as passive by default, which makes e.preventDefault()
+  // silently fail (and spam the console with "Unable to preventDefault
+  // inside passive event listener invocation" on every scroll tick). That
+  // failure let the underlying page try to scroll at the same time the
+  // canvas was trying to zoom, which is what caused the severe lag/jank
+  // when scrolling on the map. Attaching it manually below with
+  // { passive: false } fixes both the console spam and the lag.
+  const handleWheelRef = useRef(null);
+  handleWheelRef.current = (e) => {
     e.preventDefault();
     const container = containerRef.current;
     if (!container) return;
@@ -275,6 +327,14 @@ export function SimulationMap({
     const zoomFactor = e.deltaY < 0 ? 1.12 : 0.89;
     cameraRef.current.zoomAtPoint(screenX, screenY, zoomFactor);
   };
+
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const listener = (e) => handleWheelRef.current(e);
+    container.addEventListener("wheel", listener, { passive: false });
+    return () => container.removeEventListener("wheel", listener);
+  }, []);
 
   // Map Controls Buttons Handlers
   const handleZoomIn = useCallback(() => {
@@ -305,9 +365,34 @@ export function SimulationMap({
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
       onClick={handleClick}
-      onWheel={handleWheel}
     >
       <canvas ref={canvasRef} className="simulation-canvas" />
+
+      {/* Popup bubbles for orders that just completed — replaces scrolling
+          event-jump list with a bubble anchored over the actual delivery
+          point on the map. */}
+      <div className="delivery-bubble-layer">
+        {bubbleScreenPositions.map(({ id, x, y, order }) => (
+          <div key={id} className="delivery-bubble" style={{ left: x, top: y }}>
+            <div className="delivery-bubble-inner">
+              <span className="delivery-bubble-check">✓</span>
+              <span className="delivery-bubble-text">
+                Delivered — {order.etaMinutes.toFixed(1)} min
+              </span>
+            </div>
+            <div className="delivery-bubble-tail" />
+          </div>
+        ))}
+      </div>
+
+      {weather && (
+        <div className={`map-weather-badge map-weather-${weather.icon || "breezy"}`}>
+          <span className="map-weather-glyph" aria-hidden="true">
+            {{ sunny: "☀️", breezy: "🌤️", windy: "💨", storm: "⛈️" }[weather.icon] || "🌤️"}
+          </span>
+          <span className="map-weather-text">{weather.condition} · {weather.windKmh} km/h</span>
+        </div>
+      )}
 
       {/* Floating Map Controls & Layer Toggles */}
       <MapControls

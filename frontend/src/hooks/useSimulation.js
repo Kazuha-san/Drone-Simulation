@@ -1,18 +1,28 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
-import { SCENARIOS, DRONE_SPECS, GROUND_SPECS } from "../data/simulationAdapter";
+import { buildScenario, buildSpecs } from "../data/simulationAdapter";
+import { fetchPresets, runSimulation as apiRunSimulation } from "../data/apiClient";
 import { MAP_CONFIG } from "../data/mapVisuals";
 
+const FALLBACK_VEHICLE_STATE = { x: 1180, y: 860, angle: 0, altitude: 0, speedKmh: 0, visible: false };
+
 export function useSimulation() {
-  const [activeScenarioId, setActiveScenarioId] = useState("baseline");
+  // --- preset catalog + current selection ----------------------------------
+  const [presets, setPresets] = useState(null); // { fleet: [...], weather: [...], obstacles: [...] }
+  const [fleetPresetId, setFleetPresetId] = useState("standard");
+  const [weatherPresetId, setWeatherPresetId] = useState("breezy");
+  const [obstaclePresetId, setObstaclePresetId] = useState("normal_ops");
+  const [fleetMode, setFleetMode] = useState("mixed");
+
+  // --- live run state --------------------------------------------------------
+  const [scenario, setScenario] = useState(null);
+  const [specs, setSpecs] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [runError, setRunError] = useState(null);
+
   const [isPlaying, setIsPlaying] = useState(true);
   const [playbackSpeed, setPlaybackSpeed] = useState(1);
-  const [currentTime, setCurrentTime] = useState(450); // Immediate rich action on launch
-  // Seeded from real data rather than a fixed id: order ids now come from the
-  // engine (`order_<n>`), so the old hardcoded "ORD-105" never matched and the
-  // detail panel opened empty.
-  const [selectedOrderId, setSelectedOrderId] = useState(
-    () => SCENARIOS.baseline?.orders[0]?.id || null
-  );
+  const [currentTime, setCurrentTime] = useState(450);
+  const [selectedOrderId, setSelectedOrderId] = useState(null);
   const [hoveredOrderId, setHoveredOrderId] = useState(null);
   const [selectedVehicle, setSelectedVehicle] = useState(null); // 'drone' | 'ground' | null
   const [layerToggles, setLayerToggles] = useState({
@@ -23,17 +33,13 @@ export function useSimulation() {
     showLabels: true
   });
 
-  const scenario = SCENARIOS[activeScenarioId] || SCENARIOS.baseline;
-
-  // High-frequency mutable ref for 60fps canvas engine
   const simulationRef = useRef({
-    scenarioId: activeScenarioId,
-    scenario: scenario,
+    scenario: null,
     currentTime: 450,
     isPlaying: true,
     playbackSpeed: 1,
-    droneState: { x: 1180, y: 860, angle: 0, altitude: 0, speedKmh: 65, visible: true },
-    groundState: { x: 1180, y: 860, angle: 0, speedKmh: 24.5, visible: true },
+    droneState: { ...FALLBACK_VEHICLE_STATE },
+    groundState: { ...FALLBACK_VEHICLE_STATE },
     droneTrajectoryProgress: { currentIndex: 0, progress: 0 },
     groundTrajectoryProgress: { currentIndex: 0, progress: 0 },
     pulseTime: 0,
@@ -50,11 +56,49 @@ export function useSimulation() {
     }
   });
 
-  // Keep ref synchronized with high-level React state
+  // --- load the preset catalog once -----------------------------------------
   useEffect(() => {
-    simulationRef.current.scenarioId = activeScenarioId;
-    simulationRef.current.scenario = SCENARIOS[activeScenarioId];
-  }, [activeScenarioId]);
+    fetchPresets()
+      .then(setPresets)
+      .catch((e) => setRunError(e.message));
+  }, []);
+
+  // --- runSimulation(): the real, live engine call ---------------------------
+  const runSimulationNow = useCallback(async (overrides = {}) => {
+    setIsLoading(true);
+    setRunError(null);
+    try {
+      const liveTrace = await apiRunSimulation({
+        fleetPresetId: overrides.fleetPresetId ?? fleetPresetId,
+        weatherPresetId: overrides.weatherPresetId ?? weatherPresetId,
+        obstaclePresetId: overrides.obstaclePresetId ?? obstaclePresetId,
+        fleetMode: overrides.fleetMode ?? fleetMode,
+      });
+      const nextScenario = buildScenario(liveTrace);
+      const nextSpecs = buildSpecs(liveTrace);
+      setScenario(nextScenario);
+      setSpecs(nextSpecs);
+      simulationRef.current.scenario = nextScenario;
+      simulationRef.current.currentTime = 0;
+      setCurrentTime(0);
+      setIsPlaying(true);
+      setSelectedOrderId(nextScenario.orders[0]?.id || null);
+    } catch (e) {
+      setRunError(e.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [fleetPresetId, weatherPresetId, obstaclePresetId, fleetMode]);
+
+  // --- kick off one run automatically once presets are loaded, so the app
+  //     isn't blank on first load -------------------------------------------
+  const hasAutoRun = useRef(false);
+  useEffect(() => {
+    if (presets && !hasAutoRun.current) {
+      hasAutoRun.current = true;
+      runSimulationNow();
+    }
+  }, [presets, runSimulationNow]);
 
   useEffect(() => {
     simulationRef.current.isPlaying = isPlaying;
@@ -80,7 +124,6 @@ export function useSimulation() {
     simulationRef.current.layerToggles = layerToggles;
   }, [layerToggles]);
 
-  // Interpolate vehicle position along trajectory
   const interpolateTrajectory = useCallback((trajectory, time) => {
     if (!trajectory || trajectory.length === 0) {
       return { x: 1180, y: 860, angle: 0, altitude: 0, currentIndex: 0, progress: 0 };
@@ -109,7 +152,6 @@ export function useSimulation() {
       };
     }
 
-    // Find bounding keyframes
     let i = 0;
     while (i < trajectory.length - 1 && trajectory[i + 1].t <= time) {
       i++;
@@ -128,7 +170,6 @@ export function useSimulation() {
     return { x, y, angle, altitude, currentIndex: i, progress };
   }, []);
 
-  // Compute dynamic order status based on simulation clock
   const getDynamicOrders = useCallback((rawOrders, simTime) => {
     return rawOrders.map(order => {
       if (order.status === "infeasible") {
@@ -145,7 +186,6 @@ export function useSimulation() {
     });
   }, []);
 
-  // Master Clock & Telemetry Tick (requestAnimationFrame loop)
   useEffect(() => {
     let animId;
     let lastTimestamp = performance.now();
@@ -158,15 +198,19 @@ export function useSimulation() {
       const sim = simulationRef.current;
       sim.pulseTime += deltaMs * 0.001;
 
+      const currentScenario = sim.scenario;
+      if (!currentScenario) {
+        animId = requestAnimationFrame(loop);
+        return;
+      }
+
       if (sim.isPlaying) {
-        sim.currentTime += (deltaMs / 1000) * sim.playbackSpeed * 3.5; // Optimized playback rate
+        sim.currentTime += (deltaMs / 1000) * sim.playbackSpeed * 3.5;
         if (sim.currentTime > 3600) {
           sim.currentTime = 0;
         }
       }
 
-      // Update vehicle positions in ref
-      const currentScenario = sim.scenario;
       const droneInterp = interpolateTrajectory(currentScenario.droneTrajectory, sim.currentTime);
       const groundInterp = interpolateTrajectory(currentScenario.groundTrajectory, sim.currentTime);
 
@@ -175,8 +219,8 @@ export function useSimulation() {
         y: droneInterp.y,
         angle: droneInterp.angle,
         altitude: droneInterp.altitude,
-        speedKmh: DRONE_SPECS.cruiseSpeedKmh * (currentScenario.droneSpeedFactor || 1),
-        visible: true
+        speedKmh: (specs?.droneSpecs.cruiseSpeedKmh || 0) * (currentScenario.droneSpeedFactor || 1),
+        visible: currentScenario.droneTrajectory.length > 0
       };
       sim.droneTrajectoryProgress = {
         currentIndex: droneInterp.currentIndex,
@@ -187,15 +231,14 @@ export function useSimulation() {
         x: groundInterp.x,
         y: groundInterp.y,
         angle: groundInterp.angle,
-        speedKmh: GROUND_SPECS.avgSpeedKmh * (currentScenario.groundSpeedFactor || 1),
-        visible: true
+        speedKmh: (specs?.groundSpecs.avgSpeedKmh || 0) * (currentScenario.groundSpeedFactor || 1),
+        visible: currentScenario.groundTrajectory.length > 0
       };
       sim.groundTrajectoryProgress = {
         currentIndex: groundInterp.currentIndex,
         progress: groundInterp.progress
       };
 
-      // Throttled UI sync to React state (~4 times per second)
       if (now - lastUiSyncTime > 250) {
         setCurrentTime(sim.currentTime);
         lastUiSyncTime = now;
@@ -206,9 +249,8 @@ export function useSimulation() {
 
     animId = requestAnimationFrame(loop);
     return () => cancelAnimationFrame(animId);
-  }, [interpolateTrajectory]);
+  }, [interpolateTrajectory, specs]);
 
-  // Simulation Controls
   const play = useCallback(() => setIsPlaying(true), []);
   const pause = useCallback(() => setIsPlaying(false), []);
   const togglePlay = useCallback(() => setIsPlaying(prev => !prev), []);
@@ -229,21 +271,11 @@ export function useSimulation() {
     setPlaybackSpeed(speed);
   }, []);
 
-  const selectScenario = useCallback((scenarioId) => {
-    if (SCENARIOS[scenarioId]) {
-      setActiveScenarioId(scenarioId);
-      simulationRef.current.currentTime = 0;
-      setCurrentTime(0);
-      setSelectedOrderId(SCENARIOS[scenarioId].orders[0]?.id || null);
-    }
-  }, []);
-
   const toggleLayer = useCallback((layerKey) => {
     setLayerToggles(prev => ({ ...prev, [layerKey]: !prev[layerKey] }));
   }, []);
 
-  // Compute live current orders and counts for UI
-  const currentOrders = getDynamicOrders(scenario.orders, currentTime);
+  const currentOrders = scenario ? getDynamicOrders(scenario.orders, currentTime) : [];
   const selectedOrder = currentOrders.find(o => o.id === selectedOrderId) || null;
 
   const orderStats = {
@@ -254,24 +286,17 @@ export function useSimulation() {
     infeasible: currentOrders.filter(o => o.status === "infeasible").length
   };
 
-  // Generate dynamic live event feed derived from orders and current clock
   const events = useMemo(() => {
     const evts = [];
+    // "completed" events are shown as map popup bubbles (see
+    // justCompletedOrders / SimulationMap's delivery-bubble-layer), not
+    // duplicated here as scrolling event-jump entries.
     currentOrders.forEach(o => {
-      if (o.status === "completed") {
-        evts.push({
-          id: `del-${o.id}`,
-          type: "completed",
-          badge: "DELIVERED",
-          timeStr: `${Math.floor(o.completedAtSeconds / 60)}m`,
-          message: `${o.id} delivered • ${o.etaMinutes ? o.etaMinutes.toFixed(1) : "—"} min`,
-          timestamp: o.completedAtSeconds
-        });
-      } else if (o.status === "assigned") {
+      if (o.status === "assigned") {
         evts.push({
           id: `asg-${o.id}`,
           type: "assigned",
-          badge: o.assignedVehicle === "drone" ? "DRONE 01" : "GROUND 01",
+          badge: o.assignedVehicle === "drone" ? "DRONE" : "RIDER",
           timeStr: "ACTIVE",
           message: `Assigned ${o.id} • ${o.location}`,
           timestamp: (o.completedAtSeconds || 1000) - 450
@@ -282,17 +307,40 @@ export function useSimulation() {
           type: "infeasible",
           badge: "INFEASIBLE",
           timeStr: "FLAGGED",
-          message: `${o.id} • ${o.infeasibleReason || "Airspace constraint"}`,
+          message: `${o.id} • ${o.infeasibleReason || "no capacity"}`,
           timestamp: 100
         });
       }
     });
-    // Sort recent first
     return evts.sort((a, b) => b.timestamp - a.timestamp).slice(0, 4);
   }, [currentOrders]);
 
+  // Orders that completed within the last few seconds of sim-time — drives
+  // the map's popup bubbles rather than a scrolling event-jump list.
+  const justCompletedOrders = useMemo(() => {
+    const window = 12; // seconds of sim-time a bubble stays anchored for
+    return currentOrders.filter(
+      (o) => o.status === "completed" &&
+        o.completedAtSeconds != null &&
+        currentTime - o.completedAtSeconds >= 0 &&
+        currentTime - o.completedAtSeconds <= window
+    );
+  }, [currentOrders, currentTime]);
+
   return {
-    activeScenarioId,
+    presets,
+    fleetPresetId,
+    weatherPresetId,
+    obstaclePresetId,
+    fleetMode,
+    setFleetPresetId,
+    setWeatherPresetId,
+    setObstaclePresetId,
+    setFleetMode,
+    runSimulationNow,
+    isLoading,
+    runError,
+
     scenario,
     currentTime,
     isPlaying,
@@ -305,9 +353,10 @@ export function useSimulation() {
     currentOrders,
     orderStats,
     events,
+    justCompletedOrders,
     mapConfig: MAP_CONFIG,
-    droneSpecs: DRONE_SPECS,
-    groundSpecs: GROUND_SPECS,
+    droneSpecs: specs?.droneSpecs,
+    groundSpecs: specs?.groundSpecs,
 
     play,
     pause,
@@ -315,7 +364,6 @@ export function useSimulation() {
     restart,
     seek,
     changeSpeed,
-    selectScenario,
     setSelectedOrderId,
     setHoveredOrderId,
     setSelectedVehicle,

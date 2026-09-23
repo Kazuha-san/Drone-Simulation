@@ -9,7 +9,19 @@ import { Timeline } from "./components/Timeline";
 
 export function App() {
   const {
-    activeScenarioId,
+    presets,
+    fleetPresetId,
+    weatherPresetId,
+    obstaclePresetId,
+    fleetMode,
+    setFleetPresetId,
+    setWeatherPresetId,
+    setObstaclePresetId,
+    setFleetMode,
+    runSimulationNow,
+    isLoading,
+    runError,
+
     scenario,
     currentTime,
     isPlaying,
@@ -21,6 +33,7 @@ export function App() {
     layerToggles,
     orderStats,
     events,
+    justCompletedOrders,
     mapConfig,
     droneSpecs,
     groundSpecs,
@@ -30,7 +43,6 @@ export function App() {
     restart,
     seek,
     changeSpeed,
-    selectScenario,
     setSelectedOrderId,
     setHoveredOrderId,
     setSelectedVehicle,
@@ -45,7 +57,7 @@ export function App() {
     <div className="simulator-app-root">
       {/* 1. Header */}
       <Header
-        scenarioName={scenario.name}
+        scenarioName={scenario?.name || "Configuring run…"}
         isPlaying={isPlaying}
         currentTime={currentTime}
         onTogglePlay={togglePlay}
@@ -55,9 +67,19 @@ export function App() {
       {/* 2. Main Workspace (3-column layout: Left Controls | Central Map | Right Inspector) */}
       <main className="simulator-workspace">
         <ScenarioPanel
-          activeScenarioId={activeScenarioId}
+          presets={presets}
+          fleetPresetId={fleetPresetId}
+          weatherPresetId={weatherPresetId}
+          obstaclePresetId={obstaclePresetId}
+          fleetMode={fleetMode}
+          onChangeFleetPreset={setFleetPresetId}
+          onChangeWeatherPreset={setWeatherPresetId}
+          onChangeObstaclePreset={setObstaclePresetId}
+          onChangeFleetMode={setFleetMode}
+          onRunSimulation={runSimulationNow}
+          isLoading={isLoading}
+          runError={runError}
           scenario={scenario}
-          onSelectScenario={selectScenario}
           isPlaying={isPlaying}
           playbackSpeed={playbackSpeed}
           onTogglePlay={togglePlay}
@@ -98,19 +120,40 @@ export function App() {
             </button>
           )}
 
-          <SimulationMap
-            mapConfig={mapConfig}
-            simulationRef={simulationRef}
-            selectedOrderId={selectedOrderId}
-            onSelectOrder={setSelectedOrderId}
-            hoveredOrderId={hoveredOrderId}
-            onHoverOrder={setHoveredOrderId}
-            selectedVehicle={selectedVehicle}
-            onSelectVehicle={setSelectedVehicle}
-            layerToggles={layerToggles}
-            onToggleLayer={toggleLayer}
-            events={events}
-          />
+          {isLoading && (
+            <div className="sim-loading-overlay">
+              <div className="sim-loading-spinner" />
+              <span>Running live simulation…</span>
+            </div>
+          )}
+
+          {!isLoading && runError && !scenario && (
+            <div className="sim-loading-overlay sim-error-overlay">
+              <span>Couldn't reach the simulation server: {runError}</span>
+              <button className="btn-secondary-action" onClick={() => runSimulationNow()}>
+                Retry
+              </button>
+            </div>
+          )}
+
+          {scenario && (
+            <SimulationMap
+              mapConfig={mapConfig}
+              simulationRef={simulationRef}
+              selectedOrderId={selectedOrderId}
+              onSelectOrder={setSelectedOrderId}
+              hoveredOrderId={hoveredOrderId}
+              onHoverOrder={setHoveredOrderId}
+              selectedVehicle={selectedVehicle}
+              onSelectVehicle={setSelectedVehicle}
+              layerToggles={layerToggles}
+              onToggleLayer={toggleLayer}
+              events={events}
+              justCompletedOrders={justCompletedOrders}
+              noFlyZones={scenario.noFlyZones}
+              weather={scenario.weather}
+            />
+          )}
         </section>
 
         <ComparisonPanel
@@ -129,7 +172,7 @@ export function App() {
 
       {/* 3. Bottom Dashboard Strip (Metrics Bar + Timeline) */}
       <footer className="simulator-bottom-dock">
-        <MetricsBar metrics={scenario.metrics} />
+        <MetricsBar metrics={scenario?.metrics} />
         <Timeline
           currentTime={currentTime}
           maxTime={3600}

@@ -12,7 +12,18 @@ export function ComparisonPanel({
   isCollapsed = false,
   onToggleCollapse
 }) {
-  const metrics = scenario.metrics || {};
+  const metrics = scenario?.metrics || {};
+
+  if (!scenario) {
+    return (
+      <aside className={`right-panel ${isCollapsed ? "collapsed" : ""}`}>
+        <section className="panel-card">
+          <div className="panel-title">TELEMETRY</div>
+          <div className="scenario-tagline">Waiting for the first simulation run…</div>
+        </section>
+      </aside>
+    );
+  }
 
   return (
     <aside className={`right-panel ${isCollapsed ? "collapsed" : ""}`}>
@@ -86,21 +97,23 @@ export function ComparisonPanel({
               <div className="spec-row">
                 <span className="spec-label">Payload Capacity</span>
                 <span className="spec-val font-mono">
-                  {selectedVehicle === "drone" ? `${droneSpecs.maxPayloadKg} kg` : `${groundSpecs.maxPayloadKg} kg`}
+                  {selectedVehicle === "drone" ? `${droneSpecs.maxPayloadKg} kg` : "N/A"}
                 </span>
               </div>
 
               <div className="spec-row">
                 <span className="spec-label">Battery Capacity</span>
                 <span className="spec-val font-mono">
-                  {selectedVehicle === "drone" ? `${droneSpecs.batteryCapacityKwh} kWh` : `${groundSpecs.batteryCapacityKwh} kWh`}
+                  {selectedVehicle === "drone" ? `${droneSpecs.batteryCapacityKwh} kWh` : "N/A — no energy model"}
                 </span>
               </div>
 
               <div className="spec-row">
-                <span className="spec-label">Energy Burn Rate</span>
+                <span className="spec-label">{selectedVehicle === "drone" ? "Energy Burn Rate" : "Cost per km"}</span>
                 <span className="spec-val font-mono">
-                  {selectedVehicle === "drone" ? `${droneSpecs.avgEnergyPerKmKwh} kWh/km` : `${groundSpecs.avgEnergyPerKmKwh} kWh/km`}
+                  {selectedVehicle === "drone"
+                    ? `${droneSpecs.avgEnergyPerKmKwh} kWh/km`
+                    : `₹${groundSpecs.costPerKmInr} /km`}
                 </span>
               </div>
 
@@ -216,9 +229,7 @@ export function ComparisonPanel({
               <td className="td-val td-highlight-drone font-mono">
                 {(metrics.droneEnergyKwh / (metrics.droneDeliveries || 1)).toFixed(2)} kWh
               </td>
-              <td className="td-val font-mono">
-                {(metrics.groundEnergyKwh / (metrics.groundDeliveries || 1)).toFixed(2)} kWh
-              </td>
+              <td className="td-val font-mono">N/A — no energy model</td>
             </tr>
 
             <tr>

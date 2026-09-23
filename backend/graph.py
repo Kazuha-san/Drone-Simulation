@@ -259,6 +259,63 @@ def astar_energy_path(graph: CityGraph, start: str, goal: str, drone_specs: Dron
     return None  # no feasible path
 
 
+def astar_road_path(graph: "CityGraph", start: str, goal: str,
+                     speed_mps: float, traffic_multiplier: float = 1.0) -> Optional[dict]:
+    """
+    A* search for GROUND vehicles, where edge cost = travel TIME (s).
+
+    Riders are bound to the same road-derived graph drones fly over (both
+    were built from the same OSM arterial network), but under a genuinely
+    different constraint: no no-fly check (riders aren't airspace-restricted),
+    and no energy/battery limit — they only pay in time, scaled uniformly by
+    `traffic_multiplier` (>1.0 = congestion). The heuristic is scaled by the
+    same factor so it stays admissible.
+    """
+    effective_speed = max(speed_mps / max(traffic_multiplier, 1e-6), 1e-6)
+
+    def heuristic(node_id):
+        return graph.straight_line_distance_m(node_id, goal) / effective_speed
+
+    open_set = [(heuristic(start), start)]
+    came_from = {}
+    g_time = {start: 0.0}
+    g_distance = {start: 0.0}
+    visited = set()
+
+    while open_set:
+        _, current = heapq.heappop(open_set)
+        if current == goal:
+            path = [current]
+            while current in came_from:
+                current = came_from[current]
+                path.append(current)
+            path.reverse()
+            path_coords = [[graph.nodes[nid].x, graph.nodes[nid].y] for nid in path]
+            return {
+                "path": path,
+                "path_coords": path_coords,
+                "total_distance_m": g_distance[path[-1]],
+                "total_time_s": g_time[path[-1]],
+            }
+        if current in visited:
+            continue
+        visited.add(current)
+
+        for edge in graph.adjacency[current]:
+            neighbor = edge.b
+            leg_time = edge.distance_m / effective_speed
+            tentative_time = g_time[current] + leg_time
+
+            if neighbor not in g_time or tentative_time < g_time[neighbor]:
+                came_from[neighbor] = current
+                g_time[neighbor] = tentative_time
+                g_distance[neighbor] = g_distance[current] + edge.distance_m
+                priority = tentative_time + heuristic(neighbor)
+                heapq.heappush(open_set, (priority, neighbor))
+
+    return None  # not reachable via the road network
+
+
 def _reconstruct(came_from, current, g_energy, g_distance, g_time, graph):
     path = [current]
     while current in came_from:
@@ -282,27 +339,18 @@ def validate_graph(graph: CityGraph) -> list[str]:
     Returns a list of error strings (empty = all good).
 
     Checks:
-      1. No node sits inside a no-fly zone
-      2. No defined edge crosses a no-fly zone
-      3. All delivery zones are reachable from at least one dark store
-      4. No orphan nodes (every node has at least one edge)
+      1. All delivery zones are reachable from at least one dark store
+      2. No orphan nodes (every node has at least one edge)
+
+    A node or edge sitting inside/crossing a no-fly zone is NOT an error
+    here: this graph is shared by ground riders, who are not airspace-
+    restricted and legitimately use those roads. Drone-only exclusion
+    happens at pathfind time in astar_energy_path via edge_crosses_no_fly,
+    scoped to the requesting graph's active no_fly_zones.
     """
     errors = []
 
-    # 1. Node-in-no-fly-zone check
-    for node in graph.nodes.values():
-        for zone in graph.no_fly_zones:
-            if _point_in_polygon(node.x, node.y, zone.polygon):
-                errors.append(f"Node '{node.id}' ({node.x}, {node.y}) is inside no-fly zone '{zone.name}'")
-
-    # 2. Edge-crosses-no-fly-zone check
-    for edge in graph.edges:
-        na, nb = graph.nodes[edge.a], graph.nodes[edge.b]
-        blocked = graph.edge_crosses_no_fly(na, nb)
-        if blocked:
-            errors.append(f"Edge '{edge.a}' -> '{edge.b}' crosses no-fly zone '{blocked}'")
-
-    # 3. Reachability: every delivery zone reachable from at least one dark store
+    # 1. Reachability: every delivery zone reachable from at least one dark store
     dark_stores = [n.id for n in graph.nodes.values() if n.kind == "dark_store"]
     delivery_zones = [n.id for n in graph.nodes.values() if n.kind == "delivery_zone"]
 
@@ -322,7 +370,7 @@ def validate_graph(graph: CityGraph) -> list[str]:
         if dz not in reachable:
             errors.append(f"Delivery zone '{dz}' is unreachable from any dark store")
 
-    # 4. Orphan nodes
+    # 2. Orphan nodes
     for nid in graph.nodes:
         if not graph.adjacency.get(nid):
             errors.append(f"Node '{nid}' has no edges (orphan)")

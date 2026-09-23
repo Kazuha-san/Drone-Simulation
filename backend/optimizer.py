@@ -48,8 +48,8 @@ import copy
 from dataclasses import dataclass
 from typing import Optional
 
-from physics import DroneSpecs, round_trip_energy_wh, ground_trip_time_s
-from graph import CityGraph, astar_energy_path
+from physics import DroneSpecs, round_trip_energy_wh
+from graph import CityGraph, astar_energy_path, astar_road_path
 
 INR_PER_KWH = 8.0  # approximate Indian commercial grid rate
 
@@ -211,6 +211,7 @@ _PATH_CACHE: dict = {}
 def clear_path_cache() -> None:
     """Call between runs if map/specs change, so stale routes aren't reused."""
     _PATH_CACHE.clear()
+    _ROAD_PATH_CACHE.clear()
 
 
 def _route(graph: CityGraph, start: str, goal: str, specs: DroneSpecs,
@@ -223,6 +224,19 @@ def _route(graph: CityGraph, start: str, goal: str, specs: DroneSpecs,
         _PATH_CACHE[key] = astar_energy_path(graph, start, goal, specs,
                                              payload_kg, wind_mps, wind_dir_deg)
     return _PATH_CACHE[key]
+
+
+_ROAD_PATH_CACHE: dict = {}
+
+
+def _route_road(graph: CityGraph, start: str, goal: str,
+                 speed_mps: float, traffic_multiplier: float) -> Optional[dict]:
+    if start == goal:
+        return {"path": [start], "total_distance_m": 0.0, "total_time_s": 0.0}
+    key = (start, goal, round(speed_mps, 3), round(traffic_multiplier, 3))
+    if key not in _ROAD_PATH_CACHE:
+        _ROAD_PATH_CACHE[key] = astar_road_path(graph, start, goal, speed_mps, traffic_multiplier)
+    return _ROAD_PATH_CACHE[key]
 
 
 def _join(path_a: list, path_b: list) -> list:
@@ -290,43 +304,62 @@ def evaluate_drone_assignment(order: Order, vehicle: Vehicle, graph: CityGraph,
     }, ""
 
 
-def evaluate_rider_assignment(order: Order, vehicle: Vehicle, graph: CityGraph
+def evaluate_rider_assignment(order: Order, vehicle: Vehicle, graph: CityGraph,
+                               traffic_multiplier: float = 1.0
                                ) -> tuple[Optional[dict], str]:
     """
-    Ground rider baseline — deliberately no physics model (see docs/PHYSICS.md).
-    Straight-line distance inflated by a 1.3x road detour factor. Riders have
-    no energy constraint, so they only ever fail by being busy.
+    Ground rider — bound to the real road network via astar_road_path, the
+    SAME graph the drones fly over (both derived from actual Bhopal OSM
+    geometry), but under a different constraint system: no no-fly check
+    (riders aren't airspace-restricted), no energy/battery limit, and no
+    straight-line shortcuts — every metre a rider covers is a road edge that
+    exists in the map. `traffic_multiplier` scales effective road speed
+    (>1.0 = congestion), so riders and drones fail for genuinely different
+    reasons: riders from being busy or stuck behind traffic on a real route,
+    drones from battery or blocked airspace.
     """
-    DETOUR = 1.3
-    repo_m = graph.straight_line_distance_m(vehicle.station, order.origin) * DETOUR
-    out_m = graph.straight_line_distance_m(order.origin, order.destination) * DETOUR
+    speed_mps = vehicle.specs.avg_speed_kmh * 1000 / 3600
 
-    delivery_time_s = ground_trip_time_s(repo_m + out_m, vehicle.specs)
-    cycle_time_s = ground_trip_time_s(repo_m + 2 * out_m, vehicle.specs)
+    repo = _route_road(graph, vehicle.station, order.origin, speed_mps, traffic_multiplier)
+    if repo is None:
+        return None, "no_route_to_pickup"
+
+    out = _route_road(graph, order.origin, order.destination, speed_mps, traffic_multiplier)
+    if out is None:
+        return None, "no_route_to_destination"
+
+    ret = _route_road(graph, order.destination, order.origin, speed_mps, traffic_multiplier)
+    return_time_s = ret["total_time_s"] if ret else out["total_time_s"]
+    return_distance_m = ret["total_distance_m"] if ret else out["total_distance_m"]
+
+    delivery_time_s = repo["total_time_s"] + out["total_time_s"]
+    cycle_time_s = delivery_time_s + return_time_s
+    total_ridden_m = repo["total_distance_m"] + out["total_distance_m"] + return_distance_m
     # Riders are paid per km actually ridden, including repositioning and the
     # ride back to the store — charging only the laden leg understates them.
-    cost_inr = ((repo_m + 2 * out_m) / 1000.0) * vehicle.specs.cost_per_km_inr
+    cost_inr = (total_ridden_m / 1000.0) * vehicle.specs.cost_per_km_inr
 
     return {
         "vehicle_id": vehicle.id,
         "delivery_time_s": delivery_time_s,
         "cycle_time_s": cycle_time_s,
         "energy_wh": None,
-        "distance_m": repo_m + out_m,
+        "distance_m": repo["total_distance_m"] + out["total_distance_m"],
         "cost_inr": cost_inr,
-        "path": [vehicle.station, order.origin, order.destination],
-        "reposition_legs": 0 if vehicle.station == order.origin else 1,
+        "path": _join(repo["path"], out["path"]),
+        "reposition_legs": max(0, len(repo["path"]) - 1),
     }, ""
 
 
 def evaluate(order: Order, vehicle: Vehicle, graph: CityGraph,
-             wind_mps: float, wind_dir_deg: float) -> tuple[Optional[dict], str]:
+             wind_mps: float, wind_dir_deg: float,
+             traffic_multiplier: float = 1.0) -> tuple[Optional[dict], str]:
     """Kind-agnostic dispatch to the right evaluator."""
     if vehicle.busy_until_s > order.created_at_s:
         return None, "vehicle_busy"
     if vehicle.kind == "drone":
         return evaluate_drone_assignment(order, vehicle, graph, wind_mps, wind_dir_deg)
-    return evaluate_rider_assignment(order, vehicle, graph)
+    return evaluate_rider_assignment(order, vehicle, graph, traffic_multiplier)
 
 
 def commit(vehicle: Vehicle, order: Order, res: dict) -> None:
@@ -349,7 +382,8 @@ def commit(vehicle: Vehicle, order: Order, res: dict) -> None:
 
 
 def greedy_assign(orders: list[Order], vehicles: list[Vehicle], graph: CityGraph,
-                   weights: Weights, wind_mps: float = 3.0, wind_dir_deg: float = 315.0
+                   weights: Weights, wind_mps: float = 3.0, wind_dir_deg: float = 315.0,
+                   traffic_multiplier: float = 1.0
                    ) -> list[dict]:
     """
     Greedy feasibility-constrained heuristic (see module docstring for the
@@ -371,7 +405,7 @@ def greedy_assign(orders: list[Order], vehicles: list[Vehicle], graph: CityGraph
         candidates = []
         reasons = []
         for v in vehicles:
-            res, reason = evaluate(order, v, graph, wind_mps, wind_dir_deg)
+            res, reason = evaluate(order, v, graph, wind_mps, wind_dir_deg, traffic_multiplier)
             if res is None:
                 reasons.append(reason)
             else:

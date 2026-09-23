@@ -46,7 +46,7 @@ import math
 import os
 from collections import defaultdict, deque
 
-DATA_DIR = os.path.join(os.path.dirname(__file__), "..", "data")
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
 BASEMAP = os.path.join(DATA_DIR, "bhopal_basemap.json")
 OUT_MAP = os.path.join(DATA_DIR, "bhopal_map.json")
 
@@ -164,29 +164,15 @@ def main():
                     adjacency[c].add(prev)
                 prev = c
 
-    # --- 2. drop anything inside a no-fly polygon ----------------------------
-    # Drones cannot use these edges at all, so carrying them would only create
-    # graph components that A* can never enter.
-    blocked = {c for c, (x, y) in cell_pos.items() if in_any_zone(x, y)}
-    for c in blocked:
-        for nb in adjacency.pop(c, ()):
-            adjacency[nb].discard(c)
-        cell_pos.pop(c, None)
-
-    # --- 2b. drop edges that cut through a zone even though both ends are
-    # outside it. Real causeways cross Lower Lake; a drone corridor cannot.
+    # --- 2. no-fly zones are NOT pruned from the graph here. -----------------
+    # This graph is shared by both vehicle kinds: ground riders can use every
+    # real road, including ones under restricted airspace (a scooter isn't
+    # grounded by a drone no-fly zone). Drones are excluded from those edges
+    # at pathfind time instead, via CityGraph.edge_crosses_no_fly() inside
+    # astar_energy_path — so removing a road here would incorrectly block
+    # riders from a route that is only illegal for the OTHER vehicle kind.
+    blocked = set()
     crossing = 0
-    for c in list(adjacency):
-        for nb in list(adjacency[c]):
-            if c not in cell_pos or nb not in cell_pos:
-                continue
-            if any(segment_crosses_polygon(cell_pos[c], cell_pos[nb], pts)
-                   for _, pts in zones):
-                # Both directions are discarded here, so the reverse pair is
-                # never revisited - this counts each edge exactly once.
-                adjacency[c].discard(nb)
-                adjacency[nb].discard(c)
-                crossing += 1
 
     # --- 3. keep only the largest connected component ------------------------
     seen, best = set(), []

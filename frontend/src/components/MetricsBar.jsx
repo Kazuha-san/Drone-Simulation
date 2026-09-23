@@ -1,41 +1,51 @@
 import React from "react";
 
-export function MetricsBar({ metrics = {} }) {
+const DASH = "—";
+
+/**
+ * Every value here comes straight from the live run's summary
+ * (see simulationAdapter.js's `metrics` block) — no fallback numbers.
+ * When there's no scenario yet (still loading / run failed), cells show
+ * a dash rather than a plausible-looking fake figure.
+ */
+export function MetricsBar({ metrics }) {
+  const has = !!metrics;
+
   const metricItems = [
     {
       label: "TOTAL ORDERS",
-      value: metrics.totalOrders ?? 22,
+      value: has ? metrics.totalOrders : DASH,
       unit: "UNITS",
       highlight: false
     },
     {
       label: "DRONE DELIVERIES",
-      value: metrics.droneDeliveries ?? 12,
+      value: has ? metrics.droneDeliveries : DASH,
       unit: "MISSIONS",
       highlight: "drone"
     },
     {
       label: "GROUND DELIVERIES",
-      value: metrics.groundDeliveries ?? 7,
+      value: has ? metrics.groundDeliveries : DASH,
       unit: "RUNS",
       highlight: "ground"
     },
     {
       label: "AVG DELIVERY TIME",
-      value: (metrics.avgDeliveryTimeMinutes ?? 14.2).toFixed(1),
+      value: has ? metrics.avgDeliveryTimeMinutes.toFixed(1) : DASH,
       unit: "MINUTES",
       highlight: false
     },
     {
       label: "ENERGY CONSUMED",
-      value: (metrics.totalEnergyUsedKwh ?? 9.76).toFixed(2),
+      value: has ? metrics.totalEnergyUsedKwh.toFixed(2) : DASH,
       unit: "kWh",
       highlight: false
     },
     {
-      label: "OPTIMALITY GAP",
-      value: `${(metrics.optimalityGapPct ?? 0.0).toFixed(1)}%`,
-      unit: "CONVERGED",
+      label: "FEASIBILITY RATE",
+      value: has ? `${metrics.feasibilityRatePct.toFixed(1)}%` : DASH,
+      unit: "DELIVERED",
       highlight: "optimal"
     }
   ];
